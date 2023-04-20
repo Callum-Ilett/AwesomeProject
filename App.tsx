@@ -5,9 +5,11 @@
  * @format
  */
 
-import React from 'react';
+import AppCenter from 'appcenter';
+import React, {useEffect} from 'react';
 import type {PropsWithChildren} from 'react';
 import {
+  Button,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -24,6 +26,8 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+
+import Analytics from 'appcenter-analytics';
 
 type SectionProps = PropsWithChildren<{
   title: string;
@@ -62,15 +66,34 @@ function App(): JSX.Element {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
+  const sdkVersion = AppCenter.getSdkVersion();
+
+  useEffect(() => {
+    Analytics.isEnabled().then(isAnalyticsEnabled => {
+      console.log({isAnalyticsEnabled});
+    });
+
+    Analytics.trackEvent('App loaded');
+  }, []);
+
   return (
     <SafeAreaView style={backgroundStyle}>
-      <StatusBar
+      <Button
+        title={'Click me'}
+        onPress={() => {
+          console.log('PRESSED');
+          Analytics.trackEvent('My custom event');
+          Analytics.trackEvent('BUTTON PRESSED', {userId: '5'});
+        }}
+      />
+      {/* <StatusBar
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
       />
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         style={backgroundStyle}>
+        <Text>SDK VERSION {sdkVersion}</Text>
         <Header />
         <View
           style={{
@@ -91,7 +114,7 @@ function App(): JSX.Element {
           </Section>
           <LearnMoreLinks />
         </View>
-      </ScrollView>
+      </ScrollView> */}
     </SafeAreaView>
   );
 }
